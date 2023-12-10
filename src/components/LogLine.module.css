@@ -1,0 +1,24 @@
+.line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 0;
+  font-size: 0.8rem;
+  border-left: white 2px solid;
+  background: black;
+  padding: 10px;
+}
+
+.timestamp {
+  min-width: 100px;
+  text-align: right;
+}
+
+.content {
+  min-width: 200px;
+  text-align: left;
+  text-wrap: pretty;
+  margin: 0;
+}

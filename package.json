@@ -1,0 +1,41 @@
+{
+  "name": "nerdtail",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "ntail": "./cli/nerdTailPub.js",
+    "ntailServer": "./cli/nerdTailSub.js"
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "preview": "vite preview --port 9998",
+    "dev": "vite --port 9998",
+    "server": "node cli/nerdTailSub.js",
+    "dev:server": "npx nodemon cli/nerdTailSub.js",
+    "test:server": "DEBUG=nerdtail:* npm run dev:server",
+    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdtail:* ntail"
+  },
+  "dependencies": {
+    "@solid-primitives/websocket": "^1.2.0",
+    "@solidjs/router": "^0.10.1",
+    "@suid/icons-material": "^0.6.11",
+    "@suid/material": "^0.15.1",
+    "concurrently": "^8.2.2",
+    "debug": "^4.3.4",
+    "highlight.js": "^11.9.0",
+    "json5": "2.2.3",
+    "koa": "^2.14.2",
+    "namor": "^3.0.1",
+    "solid-js": "^1.8.5",
+    "split": "^1.0.1",
+    "ws": "^8.15.0",
+    "yargs": "17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.7",
+    "vite-plugin-solid": "^2.8.0"
+  }
+}

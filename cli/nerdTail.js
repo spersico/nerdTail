@@ -48,9 +48,18 @@ const options = await yargs(process.argv.slice(2))
     default: false,
     describe: 'Adds a timestamp to each log line'
   })
+  .option('mute', {
+    alias: 'm',
+    type: 'boolean',
+    describe: 'Don\'t pipe stdin with stdout'
+  })
   .help('help')
   .strict()
   .argv;
+
+if (!options.mute) {
+  process.stdin.pipe(process.stdout);
+}
 
 const logsSocket = dgram.createSocket({ type: 'udp4' });
 let isClosed = false;
@@ -65,7 +74,7 @@ logsSocket.bind(options.port, options.host, () => {
 
 logsSocket.on('connect', () => {
   const address = logsSocket.address();
-  debugSocket(`📝 Sending logs to socke (c)t: ${address.address}:${address.port}`);
+  debugSocket(`📝 Sending logs to socket: ${address.address}:${address.port}`);
   sendMessage({ subscriber: false, role: 'publisher' }, 'connect');
 });
 

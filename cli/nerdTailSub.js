@@ -40,7 +40,7 @@ const options = await yargs(process.argv.slice(2))
 const logsSocket = dgram.createSocket({ type: 'udp4' });
 const koaInstance = new Koa();
 const bffServer = koaInstance.listen(options.port, options.host,
-  () => debugWebSocket(`🚀  BFF Server live on ${options.host}:${options.port}`)
+  () => console.log(`🚀  BFF Server live on http://${options.host}:${options.port}`)
 );
 /** @type {import('ws').WebSocketServer} */
 const frontendWebsocketServer = new WebSocketServer({ server: bffServer });

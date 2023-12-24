@@ -1,7 +1,6 @@
 import { Accessor, createSignal } from 'solid-js';
-import { BottomNavigation, BottomNavigationAction, Box } from '@suid/material';
-import styles from './NavBar.module.css';
-import { Home, Stream } from '@suid/icons-material';
+import styles from './NavBar.module.scss';
+
 import { useLocation, useNavigate } from '@solidjs/router';
 
 export default function NavBar({ streams }: { streams: Accessor<string[]> }) {
@@ -10,31 +9,26 @@ export default function NavBar({ streams }: { streams: Accessor<string[]> }) {
   const path = location.pathname.split('/');
   const [active, setActive] = createSignal(path.length > 2 ? path[2] : 'home');
 
-  const handleChange = (newActive: string) => {
-    if (newActive === active()) return;
-    setActive(newActive);
-    if (newActive === 'home') return navigate('/');
-    navigate(`/stream/${newActive}`);
+  const handleChange = (destination: string) => {
+    if (destination === active()) return;
+    setActive(destination);
+    if (destination === 'home') return navigate('/');
+    navigate(`/stream/${destination}`);
   };
 
   return (
-    <Box class={styles.root}>
-      <BottomNavigation
-        showLabels
-        value={active()}
-        onChange={(_, newValue) => {
-          handleChange(newValue);
-        }}
-      >
-        <BottomNavigationAction label={'Home'} value={'home'} icon={<Home />} />
-        {streams().map((stream) => (
-          <BottomNavigationAction
-            label={stream}
-            value={stream}
-            icon={<Stream />}
-          />
+    <nav class={styles.root}>
+      <ul class={styles.ul}>
+        {['home', ...streams()].map((stream) => (
+          <li
+            class={[styles.item, active() === stream ? styles.active : '']
+              .filter(Boolean)
+              .join(' ')}
+          >
+            <button onClick={() => handleChange(stream)}>{stream}</button>
+          </li>
         ))}
-      </BottomNavigation>
-    </Box>
+      </ul>
+    </nav>
   );
 }

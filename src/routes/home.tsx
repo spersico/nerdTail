@@ -2,7 +2,6 @@ import { For, onMount } from 'solid-js';
 import { webSocketServer } from '../lib/socket';
 import { messages, setMessages } from '../lib/store';
 import LogLine from '../components/LogLine';
-import FloatingButtons from '../components/Tail';
 
 export default function Home() {
   onMount(() => {
@@ -26,8 +25,6 @@ export default function Home() {
       <For each={messages()}>
         {(msg) => <LogLine showStreamId={true} msg={msg} />}
       </For>
-
-      {messages().length && <FloatingButtons />}
     </main>
   );
 }

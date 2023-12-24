@@ -20,7 +20,6 @@
     "@solid-primitives/websocket": "^1.2.0",
     "@solidjs/router": "^0.10.1",
     "@suid/icons-material": "^0.6.11",
-    "@suid/material": "^0.15.1",
     "concurrently": "^8.2.2",
     "debug": "^4.3.4",
     "highlight.js": "^11.9.0",
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.4",
+    "sass": "^1.69.5",
     "typescript": "^5.3.3",
     "vite": "^5.0.7",
     "vite-plugin-solid": "^2.8.0"

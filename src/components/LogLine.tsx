@@ -1,4 +1,4 @@
-import styles from './LogLine.module.css';
+import styles from './LogLine.module.scss';
 import { LogMessage } from '../lib/types';
 
 export default function LogLine({

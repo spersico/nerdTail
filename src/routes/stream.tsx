@@ -1,6 +1,5 @@
 import { For, createResource } from 'solid-js';
 import LogLine from '../components/LogLine';
-import FloatingButtons from '../components/Tail';
 
 import { messages, setMessages } from '../lib/store';
 import { useParams } from '@solidjs/router';
@@ -21,8 +20,6 @@ export default function Stream() {
   return (
     <main>
       <For each={messages()}>{(msg) => <LogLine msg={msg} />}</For>
-
-      {messages().length && <FloatingButtons />}
     </main>
   );
 }

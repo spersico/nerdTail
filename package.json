@@ -8,7 +8,7 @@
     "ntailServer": "./cli/nerdTailSub.js"
   },
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --outDir=cli/nerdtailSub-frontend",
     "preview": "vite preview --port 9998",
     "dev": "vite --port 9998",
     "server": "node cli/nerdTailSub.js",

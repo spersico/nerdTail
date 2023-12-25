@@ -48,7 +48,7 @@ const bffServer = koaInstance.listen(options.port, options.host,
 const frontendWebsocketServer = new WebSocketServer({ server: bffServer });
 
 /** Serve the built frontend. */
-const __dirname = new URL('./../dist', import.meta.url).pathname;
+const __dirname = new URL('./nerdtailSub-frontend', import.meta.url).pathname;
 koaInstance.use(serve(decodeURIComponent(__dirname), { index: 'index.html' }));
 
 

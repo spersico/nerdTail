@@ -9,6 +9,8 @@ import WebSocket, { WebSocketServer } from 'ws';
 import debugLog from 'debug';
 import yargs from 'yargs/yargs';
 import namor from 'namor';
+import serve from "koa-static";
+import { URL } from 'url';
 
 const debugSocket = debugLog('nerdtail:socket');
 const debugWebSocket = debugLog('nerdtail:websocket');
@@ -40,10 +42,14 @@ const options = await yargs(process.argv.slice(2))
 const logsSocket = dgram.createSocket({ type: 'udp4' });
 const koaInstance = new Koa();
 const bffServer = koaInstance.listen(options.port, options.host,
-  () => console.log(`🚀  BFF Server live on http://${options.host}:${options.port}`)
+  () => console.log(`🚀 Listening Server live on http://${options.host}:${options.port}`)
 );
 /** @type {import('ws').WebSocketServer} */
 const frontendWebsocketServer = new WebSocketServer({ server: bffServer });
+
+/** Serve the built frontend. */
+const __dirname = new URL('./../dist', import.meta.url).pathname;
+koaInstance.use(serve(decodeURIComponent(__dirname), { index: 'index.html' }));
 
 
 

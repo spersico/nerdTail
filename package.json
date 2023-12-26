@@ -9,12 +9,12 @@
   },
   "scripts": {
     "build": "tsc && vite build --outDir=cli/nerdtailSub-frontend",
-    "preview": "vite preview --port 9998",
     "dev": "vite --port 9998",
     "server": "node cli/nerdTailSub.js",
     "dev:server": "npx nodemon cli/nerdTailSub.js",
     "test:server": "DEBUG=nerdtail:* npm run dev:server",
-    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdtail:* ntail"
+    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdtail:* ntail",
+    "test:publisher:json": "node testUtils/chattyServer.js --structured=true 2>&1 | DEBUG=nerdtail:* ntail"
   },
   "dependencies": {
     "@solid-primitives/websocket": "^1.2.0",

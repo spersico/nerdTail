@@ -61,28 +61,52 @@ if (!options.mute) {
   process.stdin.pipe(process.stdout);
 }
 
-const logsSocket = dgram.createSocket({ type: 'udp4' });
-let isClosed = false;
-let isSending = 0;
+/** @type dgram.Socket */
+let logsSocket;
+/** @type {boolean} */
+let isClosed;
+/** @type {number} */
+let isSending;
+/** @type {boolean} */
+let isReady;
 
-logsSocket.bind(options.port, options.host, () => {
-  logsSocket.setBroadcast(true);
+function startSocketServer() {
+  isClosed = false;
+  isReady = false;
+  isSending = 0;
+  logsSocket = dgram.createSocket({ type: 'udp4' });
+  logsSocket.bind(onBind);
+  logsSocket.on('connect', onConnect);
+  logsSocket.on('error', onError);
+}
+
+function onBind(eventName = 'bind') {
   const address = logsSocket.address();
-  debugSocket(`📝 Sending logs to socket: ${address.address}:${address.port}`);
-  sendMessage({ subscriber: false, role: 'publisher' }, 'listening');
-});
+  const logMessage = `
+  🚀 Log Publisher binded to socket: ${address.address}:${address.port}.
+  📝 Sending logs to socket: ${options.host}:${options.port}.
+  `;
 
-logsSocket.on('connect', () => {
-  const address = logsSocket.address();
-  debugSocket(`📝 Sending logs to socket: ${address.address}:${address.port}`);
-  sendMessage({ subscriber: false, role: 'publisher' }, 'connect');
-});
+  debugSocket(logMessage);
+  if (options.port === address.port) {
+    const errorMessage = `🚨 Cannot bind to server port. Restarting this client's socket server to bind to another port.`;
+    debugSocket(errorMessage);
+    logsSocket.close(startSocketServer);
+  } else {
+    isReady = true;
+    sendMessage({ subscriber: false, role: 'publisher' }, eventName);
+  }
+}
 
-logsSocket.on('error', (err) => {
+function onConnect() {
+  return onBind('connect');
+}
+
+function onError(err) {
   // @ts-ignore
   if (err?.code === 'EADDRINUSE') return;
-  debugSocket(`server error:\n${err.stack}`);
-});
+  debugSocket(`ERROR: ${err.stack}`);
+}
 
 function logParse(line, type = 'log') {
   const message = { id: options.id, contentType: 'string', content: line, type };
@@ -101,22 +125,18 @@ function logParse(line, type = 'log') {
 }
 
 function sendMessage(data, type) {
+  if (!isReady) return debugSocket(`ERROR SENDING: Socket not ready`);
   const message = logParse(data, type);
   const payload = Buffer.from(message);
 
   isSending++;
   logsSocket.send(payload, 0, payload.length, options.port, options.host, function (err) {
-    if (err) { debugSocket(`ERROR SENDING:\n${err.stack}`); }
-    else { debugSocket(`Broadcasted ${message}`); }
+    if (err) { debugSocket(`ERROR SENDING: ${err.stack}`); }
+    else { debugSocket(`Broadcasted ${message} `); }
     isSending--;
     if (isClosed && !isSending) logsSocket.close();
   });
 }
-
-process.stdin
-  .pipe(split(null, null, { trailing: false }))
-  .on('data', sendMessage);
-
 
 function closeConnection(event) {
   debug('stdin closed with event:${event}');
@@ -125,6 +145,10 @@ function closeConnection(event) {
   logsSocket.close();
 }
 
+
+
+startSocketServer();
+process.stdin.pipe(split(null, null, { trailing: false })).on('data', sendMessage);
 process.stdin.on('end', () => closeConnection('end'));
 process.stdin.on('unpipe', () => closeConnection('unpipe'));
 process.stdin.on('finish', () => closeConnection('finish'));

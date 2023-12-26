@@ -154,6 +154,15 @@ logsSocket.on('connect', () => {
 
 logsSocket.on('error', (err) => {
   debugSocket(`Log socket error:\n${err.stack}`);
+
+  // @ts-ignore
+  if (err?.code === 'EADDRINUSE') {
+    console.error('\x1b[41m%s\x1b[0m', 'CRITICAL ERROR: The socket port is already in use');
+    console.error('\x1b[31m%s\x1b[0m', `\nThis means that the server is already running, and will result in the server not getting any logs.
+Restart the server AND THEN the things outputting logs.
+`);
+    process.exit(1);
+  }
 });
 
 logsSocket.on('close', (err) => {

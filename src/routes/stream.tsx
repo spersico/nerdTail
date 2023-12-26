@@ -11,7 +11,7 @@ export default function Stream() {
     () => params.id,
     () => {
       webSocketServer.send(
-        JSON.stringify({ type: 'subscribe', id: params.id })
+        JSON.stringify({ type: 'subscribe', streamid: params.id })
       );
       setMessages([]);
     }

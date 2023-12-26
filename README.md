@@ -11,7 +11,7 @@ This is very much a work in progress, and it's ABSOLUTELY NOT READY for producti
 
 ## ⚙️ The way it works:
 
- - `nTail` expects to be piped a stream of logs from a process, and that happens, it will send those logs through a UDP socket that `nTailServer` listens.
+ - `nTail` expects to be piped a stream of logs from a process, and when that happens, it will send those logs through a UDP socket that `nTailServer` listens.
   ```bash
  # Example:
   YOUR_APP 2>&1 | ntail <OTHER OPTIONS>

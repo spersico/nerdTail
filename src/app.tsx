@@ -1,6 +1,6 @@
 import { Suspense } from 'solid-js/web';
-
 import './index.css';
+import 'highlight.js/styles/github-dark.css';
 import NavBar from './components/NavBar';
 import { JSX } from 'solid-js';
 import { streams } from './lib/store';

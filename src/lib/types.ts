@@ -31,5 +31,6 @@ export const isStreamsStatusMessage = (
 export type LogMessage = {
   streamId: string;
   timestamp?: string;
-  html: string;
+  raw: string;
+  html?: string;
 };

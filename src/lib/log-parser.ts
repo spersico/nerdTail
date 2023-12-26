@@ -1,7 +1,5 @@
-import hljs from 'highlight.js/lib/core';
-import json from 'highlight.js/lib/languages/json';
+import hljs from 'highlight.js';
 import { LogMessage, RawLogMessage } from './types';
-hljs.registerLanguage('json', json);
 
 export function parseMessage(message: unknown): RawLogMessage | null {
   let parsedMessage: RawLogMessage;
@@ -16,21 +14,24 @@ export function parseMessage(message: unknown): RawLogMessage | null {
 }
 
 export function parseLog(log: RawLogMessage): LogMessage {
-  let formattedContent = log.content;
-
-  if (log.contentType === 'json') {
-    // for object just format JSON
-    formattedContent = hljs.highlight(
-      JSON.stringify(formattedContent, null, ''),
-      {
-        language: 'json',
-      }
-    ).value;
-  }
-
-  return {
+  const parsedLog: LogMessage = {
     timestamp: log.timestamp && new Date(log.timestamp).toJSON(),
-    html: formattedContent,
+    html: undefined,
+    raw: log.content,
     streamId: log.streamid,
   };
+
+  try {
+    if (log.contentType === 'json') {
+      parsedLog.raw = `${JSON.stringify(JSON.parse(log.content), null, 2)}`;
+    }
+    parsedLog.html = hljs.highlight(parsedLog.raw, {
+      language: log.contentType,
+      ignoreIllegals: true,
+    }).value;
+  } catch (error) {
+    console.error(`🐛 | parseLog | error:`, error);
+  }
+
+  return parsedLog;
 }

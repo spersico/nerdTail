@@ -109,7 +109,7 @@ function onError(err) {
 }
 
 function logParse(line, type = 'log') {
-  const message = { id: options.id, contentType: 'string', content: line, type };
+  const message = { id: options.id, contentType: 'plaintext', content: line, type };
   if (options.timestamp) {
     message.timestamp = new Date().toISOString();
   }

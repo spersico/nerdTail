@@ -21,9 +21,8 @@ export default function LogLine({
         class={`${styles.content} ${
           !msg.timestamp && styles.contentWithoutTimestamp
         }`}
-      >
-        {msg.html}
-      </pre>
+        innerHTML={msg.html ?? msg.raw}
+      />
     </div>
   );
 }

@@ -185,7 +185,7 @@ logsSocket.on('message', function (rawData, origin) {
     timestamp: data.timestamp,
     streamid: data.id,
     content: data.content,
-    contentType: typeof data.content,
+    contentType: data.contentType,
     type: 'log',
   };
   streams[data.id].last = Date.now();

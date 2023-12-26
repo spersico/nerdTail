@@ -158,9 +158,9 @@ logsSocket.on('error', (err) => {
   // @ts-ignore
   if (err?.code === 'EADDRINUSE') {
     console.error('\x1b[41m%s\x1b[0m', 'CRITICAL ERROR: The socket port is already in use');
-    console.error('\x1b[31m%s\x1b[0m', `\nThis means that the server is already running, and will result in the server not getting any logs.
-Restart the server AND THEN the things outputting logs.
-`);
+    console.error('\x1b[31m%s\x1b[0m', `\nThis means that some other process is already listening on port ${options.port} on ${options.host}.\n
+    Please check if you have another instance of ntail running, or if you have another process listening on that port.
+    OR set another port in both publishers and subscribers, using the --port option.`);
     process.exit(1);
   }
 });

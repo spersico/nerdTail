@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 // @ts-check
-
 'use strict';
 import dgram from 'dgram';
 import Koa from 'koa';
@@ -11,7 +10,10 @@ import yargs from 'yargs/yargs';
 import namor from 'namor';
 import serve from "koa-static";
 import { URL } from 'url';
+import { appendFile, mkdir, } from 'fs/promises';
+import { existsSync, writeFileSync } from 'node:fs';
 
+const logFolder = new URL('./logs/', import.meta.url);
 const debugSocket = debugLog('nerdtail:socket');
 const debugWebSocket = debugLog('nerdtail:websocket');
 const options = await yargs(process.argv.slice(2))
@@ -26,6 +28,14 @@ const options = await yargs(process.argv.slice(2))
     alias: 'up',
     default: 9999,
     describe: 'The listening UDP port'
+  })
+  .option('persist', {
+    default: false,
+    describe: `Persist messages to disk - Defaults to false - If set, will persist logs on ${logFolder.pathname} folder`
+  })
+  .option('persistFlush', {
+    default: 0,
+    describe: 'The amount (in seconds) to wait before flushing the logs file - By default we do not flush the logs'
   })
   .help('help')
   .alias('help', 'h')
@@ -42,22 +52,24 @@ const options = await yargs(process.argv.slice(2))
 const logsSocket = dgram.createSocket({ type: 'udp4' });
 const koaInstance = new Koa();
 const bffServer = koaInstance.listen(options.port, options.host,
-  () => console.log(`🚀 Listening Server live on http://${options.host}:${options.port}`)
+  () => console.log(`🚀  Listening Server live on ${new URL(`http://${options.host}:${options.port}`).href}`)
 );
 /** @type {import('ws').WebSocketServer} */
 const frontendWebsocketServer = new WebSocketServer({ server: bffServer });
 
 /** Serve the built frontend. */
-const __dirname = new URL('./nerdtailSub-frontend', import.meta.url).pathname;
-koaInstance.use(serve(decodeURIComponent(__dirname), { index: 'index.html' }));
-
-
+const __frontendDirname = new URL('./nerdtailSub-frontend', import.meta.url).pathname;
+koaInstance.use(serve(decodeURIComponent(__frontendDirname), { index: 'index.html' }));
 
 /** @ts-ignore @type {{ [key: string]: {last: number, subscribers: any[]} } & { _common_room: {subscribers: any[]} }}  */
 const streams = { _common_room: { subscribers: [] } };
 
 /** @type {{ [key: string]: any } } */
 const clients = {};
+
+
+/** @type {{ [key: string]: URL } } */
+const persistencePaths = {};
 
 /**
  * Prepares
@@ -135,6 +147,44 @@ function decodeSocketMessage(data) {
   }
 }
 
+/**
+ * Sets up the log sending to disk, creating the folder and file if needed.
+ * It also sets the global variable for the path to the log file.
+ * Lastly, it also sets up the interval to flush the logs.
+ * @param {string} streamid 
+ * @returns void
+ */
+function setupLogSending(streamid) {
+  const { persistFlush, persist } = options;
+  if (!persist) return;
+  persistencePaths[streamid] = new URL(`./${streamid}.log`, logFolder);
+  debugSocket(`Log persisting paths:`, { folder: logFolder.href, log: persistencePaths[streamid].href });
+
+  if (!existsSync(logFolder)) mkdir(logFolder, { recursive: true });
+  if (!existsSync(persistencePaths[streamid])) writeFileSync(persistencePaths[streamid], '');
+  debugSocket(`Log persisting paths set`);
+
+  if (!persistFlush || !Number.isSafeInteger(persistFlush)) return;
+
+  debugSocket(`Setting up log flush every ${persistFlush} seconds`);
+  setInterval(() => {
+    // clears the file every <persistFlush> seconds
+    if (existsSync(persistencePaths[streamid])) writeFileSync(persistencePaths[streamid], '');
+  }, persistFlush * 1000);
+}
+
+
+/**
+ * Persists a message to disk. It will only persist if the persist option is set.
+ * Appends the message to the file.
+ * @param {SocketMessage} data 
+ */
+async function persistMessageOnDisk(data) {
+  if (!options.persist) return;
+  appendFile(persistencePaths[data.id], data.content + '\n');
+}
+
+
 
 
 logsSocket.bind(options.port, options.host, () => {
@@ -178,7 +228,9 @@ logsSocket.on('message', function (rawData, origin) {
     // if the stream wasn't present before, add it to the list
     streams[data.id] = { last: Date.now(), subscribers: [] };
     broadcastToFrontend(prepareStreamsMessage());
+    setupLogSending(data.id);
   };
+  persistMessageOnDisk(data);
 
   // and broadcast the new list to the clients
   const message = {

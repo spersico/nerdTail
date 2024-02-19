@@ -3,6 +3,9 @@ body {
     'Helvetica Neue', sans-serif;
 
   background: #222;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
 }
 
 a {
@@ -11,9 +14,10 @@ a {
 
 main {
   text-align: center;
-  padding: 1em;
   margin: 0 auto;
   color: #fafafa;
+  height: calc(100vh - 50px);
+  overflow-y: scroll;
 }
 
 h1 {

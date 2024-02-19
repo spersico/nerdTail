@@ -22,6 +22,11 @@ export type StreamsStatusMessage = {
   streams: string[];
 };
 
+export type SubscriptionMessage = {
+  type: 'subscribe';
+  streamid?: string;
+};
+
 export const isStreamsStatusMessage = (
   message: unknown
 ): message is StreamsStatusMessage => {
@@ -29,8 +34,9 @@ export const isStreamsStatusMessage = (
 };
 
 export type LogMessage = {
+  id: string;
   streamId: string;
   timestamp?: string;
   raw: string;
-  html?: string;
+  formatted?: string;
 };

@@ -12,16 +12,13 @@ export default function LogLine({
     <div
       class={`${styles.line} ${!msg.timestamp && styles.lineWithoutTimestamp}`}
     >
-      {showStreamId && <div class={styles.timestamp}>{msg.streamId}</div>}
-
-      {msg.timestamp && (
-        <div class={styles.timestamp}>{new Date(msg.timestamp).toJSON()}</div>
-      )}
+      <div class={styles.streamId}>{msg.streamId}</div>
+      {msg.timestamp && <div class={styles.timestamp}>{msg.timestamp}</div>}
       <pre
         class={`${styles.content} ${
           !msg.timestamp && styles.contentWithoutTimestamp
         }`}
-        innerHTML={msg.html ?? msg.raw}
+        innerHTML={msg.formatted ?? msg.raw}
       />
     </div>
   );

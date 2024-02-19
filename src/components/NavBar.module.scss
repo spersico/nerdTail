@@ -1,34 +1,24 @@
 .root {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-.ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #111;
-  text-align: center;
-}
-
-.item {
-  display: inline-block;
-  padding: 0.5rem;
-  margin: 0.5rem;
-  border: 1px solid #335d92;
-  color: white;
-  > button {
-    text-transform: capitalize;
-    background: transparent;
-    color: #fafafa;
-    border: none;
-    font-size: 1rem;
-    text-decoration: none;
-  }
-}
-
-.active {
+  height: 50px;
   background-color: #335d92;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 1rem;
+  align-items: center;
+
+  select {
+    width: 150px;
+    display: inline-block;
+    color: 1px solid #335d92;
+    height: 38px;
+  }
+
+  input {
+    display: inline-block;
+    height: 32px;
+    width: 50%;
+    color: 1px solid #335d92;
+  }
 }

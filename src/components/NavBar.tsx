@@ -1,34 +1,51 @@
-import { Accessor, createSignal } from 'solid-js';
+import { onMount } from 'solid-js';
 import styles from './NavBar.module.scss';
+import { subscribeToRoom } from '../lib/socket';
+import { filters, setFilters } from '../lib/store';
 
-import { useLocation, useNavigate } from '@solidjs/router';
+export default function NavBar({ streams }: { streams: { id: string }[] }) {
+  onMount(() => {
+    subscribeToRoom();
+  });
 
-export default function NavBar({ streams }: { streams: Accessor<string[]> }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const path = location.pathname.split('/');
-  const [active, setActive] = createSignal(path.length > 2 ? path[2] : 'home');
+  const handleStreamSelection = (event: Event) => {
+    const { streamId: oldStreamId, search } = filters();
 
-  const handleChange = (destination: string) => {
-    if (destination === active()) return;
-    setActive(destination);
-    if (destination === 'home') return navigate('/');
-    navigate(`/stream/${destination}`);
+    const newValue = (event.target as HTMLSelectElement).value;
+    if (newValue === oldStreamId) return;
+    const streamId = newValue === '_common_room' ? undefined : newValue;
+    setFilters(() => ({ streamId, search }));
   };
 
   return (
     <nav class={styles.root}>
-      <ul class={styles.ul}>
-        {['home', ...streams()].map((stream) => (
-          <li
-            class={[styles.item, active() === stream ? styles.active : '']
+      <select onChange={handleStreamSelection}>
+        <option value='_common_room'>All Sources</option>
+        {streams.map(({ id: stream }: { id: string }) => (
+          <option
+            class={[
+              styles.item,
+              filters().streamId === stream ? styles.active : '',
+            ]
               .filter(Boolean)
               .join(' ')}
+            value={stream}
           >
-            <button onClick={() => handleChange(stream)}>{stream}</button>
-          </li>
+            {stream}
+          </option>
         ))}
-      </ul>
+      </select>
+
+      <input
+        type='text'
+        placeholder='Search'
+        onInput={(event) => {
+          setFilters(() => ({
+            ...filters(),
+            search: (event.target as HTMLInputElement).value,
+          }));
+        }}
+      ></input>
     </nav>
   );
 }

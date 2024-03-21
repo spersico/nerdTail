@@ -1,11 +1,14 @@
 {
-  "name": "nerdTail",
+  "name": "nerdtail",
+  "description": "nerdTail is a command line utility that grabs every line in stdin from a process, and broadcasts it over UDP.  Tail log files, app output, or whatever you wish. See multiple streams in the browser, in realtime.",
+  "author": "spersico",
+  "license": "MIT",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "bin": {
-    "nerdTail": "./cli/nerdTailPub.js",
-    "nerdTailServer": "./cli/nerdTailServer.js"
+    "nerdTail": "cli/nerdTailPub.js",
+    "nerdTailServer": "cli/nerdTailServer.js"
   },
   "scripts": {
     "build": "tsc && vite build --outDir=cli/nerdTailSub-frontend",

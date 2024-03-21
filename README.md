@@ -11,15 +11,15 @@ This is very much a work in progress, and it's ABSOLUTELY NOT READY for producti
 
 ## ⚙️ The way it works:
 
- - `nTail` expects to be piped a stream of logs from a process, and when that happens, it will send those logs through a UDP socket that `nTailServer` listens.
+ - `nerdTail` expects to be piped a stream of logs from a process, and when that happens, it will send those logs through a UDP socket that `nerdTailServer` listens.
   ```bash
  # Example:
   YOUR_APP 2>&1 | nerdTail <OTHER OPTIONS>
  ```
- - `nTailServer` listens for logs that were sent, and sends them to a frontend client (through websocket). The client (a SolidJS SPA) displays the logs on the browser.
+ - `nerdTailServer` listens for logs that were sent, and sends them to a frontend client (through websocket). The client (a SolidJS SPA) displays the logs on the browser.
 
 # ☑ TODO LIST (in order of priority):
- - [x] Make it so that the nTailServer runs both the frontend and the BFF server at the same time (prefferably in the same process) (right now you've got to run `nerdTailServer` and `npm run:dev`)
+ - [x] Make it so that the nerdTailServer runs both the frontend and the BFF server at the same time (prefferably in the same process) (right now you've got to run `nerdTailServer` and `npm run:dev`)
  - [ ] Add filtering for logs in the UI, improve storing and handling data.
  - [ ] Add lots of styling improvements
  - [ ] Add tests
@@ -29,9 +29,9 @@ This is very much a work in progress, and it's ABSOLUTELY NOT READY for producti
 ## 🧑🏻‍💻 Developing Locally
 
 There are 3 scripts in the `package.json` file that should help:
- - `test:publisher`: runs a test publisher that sends a bunch of logs to the server constantly
-  - `test:server`: runs the server that acts as the subscriber to the publishers
-  - `dev`: runs the frontend server, that connects to the subscriber server (you only need to run this while developing).
+ - `test:publisher`: runs a test publisher that sends a bunch of logs to the server constantly (`test:publisher:json` to send JSON logs)
+  - `dev:server`: runs the server that acts as the subscriber to the publishers
+  - `dev:client`: runs the frontend server, that connects to the subscriber server (you only need to run this while developing).
   
 ### Running it locally as if it were installed on your machine
 You can use the test:publisher and test:server scripts to test some log source locally, or install this locally and use it as a CLI tool:

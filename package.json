@@ -1,21 +1,19 @@
 {
-  "name": "nerdtail",
+  "name": "nerdTail",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "bin": {
-    "ntail": "./cli/nerdTailPub.js",
-    "ntailServer": "./cli/nerdTailSub.js"
+    "nerdTail": "./cli/nerdTailPub.js",
+    "nerdTailServer": "./cli/nerdTailServer.js"
   },
   "scripts": {
-    "build": "tsc && vite build --outDir=cli/nerdtailSub-frontend",
-    "build:watch": "tsc && vite build --outDir=cli/nerdtailSub-frontend --watch=true",
-    "dev": "vite --port 9998",
-    "server": "node cli/nerdTailSub.js",
-    "dev:server": "npx nodemon cli/nerdTailSub.js",
-    "test:server": "DEBUG=nerdtail:* npm run dev:server",
-    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdtail:* ntail",
-    "test:publisher:json": "node testUtils/chattyServer.js --structured=true 2>&1 | DEBUG=nerdtail:* ntail --json=true"
+    "build": "tsc && vite build --outDir=cli/nerdTailSub-frontend",
+    "build:watch": "tsc && vite build --outDir=cli/nerdTailSub-frontend --watch=true",
+    "dev:client": "vite --port 9998",
+    "dev:server": "DEBUG=nerdTail:* npx nodemon cli/nerdTailServer.js",
+    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* nerdTail",
+    "test:publisher:json": "node testUtils/chattyServer.js --structured=true 2>&1 | DEBUG=nerdTail:* nerdTail --json=true"
   },
   "nodemonConfig": {
     "watch": [

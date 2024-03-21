@@ -8,17 +8,17 @@ import debugLog from 'debug';
 import split from "split";
 import dgram from "dgram";
 
-const debug = debugLog('nerdtail');
-const debugSocket = debugLog('nerdtail:socket');
+const debug = debugLog('nerdTail');
+const debugSocket = debugLog('nerdTail:socket');
 const options = await yargs(process.argv.slice(2))
-  .scriptName("ntail")
-  .usage('Usage: cmd | ntail Publisher Service [OPTIONS]')
-  .example('server | ntail > server.log', 'localhost + file')
-  .example('server | ntail --id api.domain.com', 'Name the log stream')
-  .example('server | ntail --host example.com', 'Sends to example.com')
-  .example('server | ntail --port 43567', 'Uses custom port')
-  .example('server | ntail --mute', 'No stdout')
-  .example('server | ntail --no-tty', 'Strips ansi colors')
+  .scriptName("nerdTail")
+  .usage('Usage: cmd | nerdTail Publisher Service [OPTIONS]')
+  .example('server | nerdTail > server.log', 'localhost + file')
+  .example('server | nerdTail --id api.domain.com', 'Name the log stream')
+  .example('server | nerdTail --host example.com', 'Sends to example.com')
+  .example('server | nerdTail --port 43567', 'Uses custom port')
+  .example('server | nerdTail --mute', 'No stdout')
+  .example('server | nerdTail --no-tty', 'Strips ansi colors')
   .option('host', {
     alias: 'h',
     type: 'string',

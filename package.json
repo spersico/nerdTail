@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "type": "module",
   "bin": {
-    "nerdTail": "cli/nerdTailPub.js",
+    "nerdTail": "cli/nerdTail.js",
     "nerdTailServer": "cli/nerdTailServer.js"
   },
   "scripts": {
@@ -14,8 +14,8 @@
     "build:watch": "tsc && vite build --outDir=cli/nerdTailSub-frontend --watch=true",
     "dev:client": "vite --port 9998",
     "dev:server": "DEBUG=nerdTail:* npx nodemon cli/nerdTailServer.js",
-    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* nerdTail",
-    "test:publisher:json": "node testUtils/chattyServer.js --structured=true 2>&1 | DEBUG=nerdTail:* nerdTail --json=true"
+    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* ./cli/nerdTail.js",
+    "test:publisher:json": "node testUtils/chattyServer.js --structured=true 2>&1 | DEBUG=nerdTail:* node ./cli/nerdTail.js"
   },
   "nodemonConfig": {
     "watch": [
@@ -39,6 +39,7 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "np": "^10.0.1",
     "@types/node": "^20.10.4",
     "sass": "^1.69.5",
     "typescript": "^5.3.3",

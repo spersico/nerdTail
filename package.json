@@ -24,11 +24,15 @@
     "test-util:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* ./cli/nerdTailClient.js",
     "test-util:publisher:json": "node testUtils/chattyServer.js --contentType=json 2>&1 | DEBUG=nerdTail:* node ./cli/nerdTailClient.js --contentType=json"
   },
+  "main": "cli/nerdTailListener.js",
   "nodemonConfig": {
     "watch": [
       "./cli/**"
     ]
   },
+  "files": [
+    "cli"
+  ],
   "dependencies": {
     "@solid-primitives/websocket": "^1.2.2",
     "debug": "^4.3.7",

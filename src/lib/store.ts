@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { parseLogMessage } from './log-parser';
 import { LogMessage, RawLogMessage } from './types';
-import Dexie, { Collection, Table } from 'dexie';
+import Dexie, { Table } from 'dexie';
 
 export class Store extends Dexie {
   streams!: Table<{ id: string }, string>;

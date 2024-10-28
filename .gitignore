@@ -3,6 +3,7 @@ logs
 *.log
 npm-debug.log*
 cli/nerdtailSub-frontend/*
+cli/nerdtailSub-frontend/index.html
 node_modules
 dist/*
 dist-ssr

@@ -1,25 +1,25 @@
-# nerdTail
+# nerdTailClient
 ## A simple tool to see logs in the browser 🐛
-nerdTail is a command line utility that grabs every line in stdin from a process, and broadcasts it over UDP. 
+nerdTailClient is a command line utility that grabs every line in stdin from a process, and broadcasts it over UDP. 
 Tail log files, app output, or whatever you wish. See multiple streams in the browser, in realtime.
 
 **Heavily inspired** by [rtail](https://github.com/kilianc/rtail) (we copied a lot of the implementation from there).
 
-The way it works is that you pipe the output of a process to `nerdTail`, then you open `nerdTailServer` and then you open the browser to `http://localhost:9999` (or whatever port you specify).
+The way it works is that you pipe the output of a process to `nerdTailClient`, then you open `nerdTailListener` and then you open the browser to `http://localhost:9999` (or whatever port you specify).
 
 This is very much a work in progress, and it's ABSOLUTELY NOT READY for production use.
 
 ## ⚙️ The way it works:
 
- - `nerdTail` expects to be piped a stream of logs from a process, and when that happens, it will send those logs through a UDP socket that `nerdTailServer` listens.
+ - `nerdTailClient` expects to be piped a stream of logs from a process, and when that happens, it will send those logs through a UDP socket that `nerdTailListener` listens.
   ```bash
  # Example:
-  YOUR_APP 2>&1 | nerdTail <OTHER OPTIONS>
+  YOUR_APP 2>&1 | nerdTailClient <OTHER OPTIONS>
  ```
- - `nerdTailServer` listens for logs that were sent, and sends them to a frontend client (through websocket). The client (a SolidJS SPA) displays the logs on the browser.
+ - `nerdTailListener` listens for logs that were sent, and sends them to a frontend client (through websocket). The client (a SolidJS SPA) displays the logs on the browser.
 
 # ☑ TODO LIST (in order of priority):
- - [x] Make it so that the nerdTailServer runs both the frontend and the BFF server at the same time (prefferably in the same process) (right now you've got to run `nerdTailServer` and `npm run:dev`)
+ - [x] Make it so that the nerdTailListener runs both the frontend and the BFF server at the same time (prefferably in the same process) (right now you've got to run `nerdTailListener` and `npm run:dev`)
  - [ ] Add filtering for logs in the UI, improve storing and handling data.
  - [ ] Add lots of styling improvements
  - [ ] Add tests
@@ -45,7 +45,7 @@ And then
 $ npm link
 ```
 
-Then you can run `nerdTail` and `nerdTailServer` from anywhere in your system.
+Then you can run `nerdTailClient` and `nerdTailListener` from anywhere in your system.
 
 ## 🙋🏻 FAQ
 

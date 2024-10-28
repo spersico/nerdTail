@@ -3,7 +3,7 @@
   "description": "nerdTail is a command line utility that grabs every line in stdin from a process, and broadcasts it over UDP.  Tail log files, app output, or whatever you wish. See multiple streams in the browser, in realtime.",
   "author": "spersico",
   "license": "MIT",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "repository": {
     "type": "git",

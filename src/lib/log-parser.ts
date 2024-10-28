@@ -2,7 +2,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { LogMessage, RawLogMessage } from './types';
 
-export function parseMessage(message: unknown): RawLogMessage | null {
+export function parseRawMessage(message: unknown): RawLogMessage | null {
   let parsedMessage: RawLogMessage;
   try {
     parsedMessage = JSON.parse(message as string);
@@ -14,9 +14,40 @@ export function parseMessage(message: unknown): RawLogMessage | null {
   return parsedMessage;
 }
 
-export function parseLog(log: RawLogMessage): LogMessage {
+const Strategies: Record<
+  'plaintext' | 'json',
+  (message: LogMessage) => LogMessage
+> = {
+  json(message: LogMessage) {
+    try {
+      const nicerJson = `${JSON.stringify(JSON.parse(message.raw), null, 2)}`;
+
+      message.formatted = hljs.highlight(nicerJson, {
+        language: 'json',
+        ignoreIllegals: true,
+      }).value;
+      return message;
+    } catch (error) {
+      return this.plaintext(message);
+    }
+  },
+  plaintext(message: LogMessage) {
+    try {
+      if (typeof message.raw !== 'string') {
+        message.raw = JSON.stringify(message.raw, null, 2);
+      }
+      message.formatted = hljs.highlightAuto(message.raw).value;
+      return message;
+    } catch (error) {
+      console.error(`🐛 | Strategies.plaintext | error:`, error);
+      return message;
+    }
+  },
+};
+
+export function parseLogMessage(log: RawLogMessage): LogMessage {
   const timestamp = log.timestamp ? new Date(log.timestamp) : new Date();
-  const parsedLog: LogMessage = {
+  const message: LogMessage = {
     id: `${timestamp.getTime()}-${log.streamid}-${Math.random()
       .toString(36)
       .substring(5)}`,
@@ -25,18 +56,5 @@ export function parseLog(log: RawLogMessage): LogMessage {
     raw: log.content,
     streamId: log.streamid,
   };
-
-  try {
-    if (log.contentType === 'json') {
-      parsedLog.raw = `${JSON.stringify(JSON.parse(log.content), null, 2)}`;
-    }
-    parsedLog.formatted = hljs.highlight(parsedLog.raw, {
-      language: log.contentType,
-      ignoreIllegals: true,
-    }).value;
-  } catch (error) {
-    console.error(`🐛 | parseLog | error:`, error);
-  }
-
-  return parsedLog;
+  return Strategies[log.contentType](message);
 }

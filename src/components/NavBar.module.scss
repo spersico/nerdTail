@@ -15,6 +15,18 @@
     height: 38px;
   }
 
+  button {
+    height: 38px;
+    width: 100px;
+    color: 1px solid #335d92;
+    background-color: white;
+    border-color: transparent;
+  }
+
+  button:hover {
+    border: 1px inset black;
+  }
+
   input {
     display: inline-block;
     height: 32px;

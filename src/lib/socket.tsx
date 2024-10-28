@@ -1,5 +1,5 @@
 import { createReconnectingWS } from '@solid-primitives/websocket';
-import { parseMessage } from './log-parser';
+import { parseRawMessage } from './log-parser';
 import {
   SubscriptionMessage,
   isRawLogMessage,
@@ -10,7 +10,7 @@ import { db } from './store';
 export const webSocketServer = createReconnectingWS('ws://localhost:9999');
 
 webSocketServer.addEventListener('message', (ev) => {
-  const parsedMessage = parseMessage(ev.data);
+  const parsedMessage = parseRawMessage(ev.data);
   if (isStreamsStatusMessage(parsedMessage)) {
     db.setStreams(parsedMessage.streams);
   } else if (isRawLogMessage(parsedMessage)) {

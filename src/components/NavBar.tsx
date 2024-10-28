@@ -1,7 +1,7 @@
 import { onMount } from 'solid-js';
 import styles from './NavBar.module.scss';
 import { subscribeToRoom } from '../lib/socket';
-import { filters, setFilters } from '../lib/store';
+import { clearLogs, filters, setFilters } from '../lib/store';
 
 export default function NavBar({ streams }: { streams: { id: string }[] }) {
   onMount(() => {
@@ -35,6 +35,7 @@ export default function NavBar({ streams }: { streams: { id: string }[] }) {
           </option>
         ))}
       </select>
+      <button onClick={clearLogs}>Clear Logs</button>
 
       <input
         type='text'

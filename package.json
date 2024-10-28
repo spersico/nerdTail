@@ -3,19 +3,26 @@
   "description": "nerdTail is a command line utility that grabs every line in stdin from a process, and broadcasts it over UDP.  Tail log files, app output, or whatever you wish. See multiple streams in the browser, in realtime.",
   "author": "spersico",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.8",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spersico/nerdTail.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spersico/nerdTail/issues"
+  },
   "bin": {
-    "nerdTail": "cli/nerdTail.js",
-    "nerdTailServer": "cli/nerdTailServer.js"
+    "nerdTailClient": "cli/nerdTailClient.js",
+    "nerdTailListener": "cli/nerdTailListener.js"
   },
   "scripts": {
     "build": "tsc && vite build --outDir=cli/nerdTailSub-frontend",
     "build:watch": "tsc && vite build --outDir=cli/nerdTailSub-frontend --watch=true",
     "dev:client": "vite --port 9998",
-    "dev:server": "DEBUG=nerdTail:* npx nodemon cli/nerdTailServer.js",
-    "test:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* ./cli/nerdTail.js",
-    "test:publisher:json": "node testUtils/chattyServer.js --structured=true 2>&1 | DEBUG=nerdTail:* node ./cli/nerdTail.js"
+    "dev:server": "DEBUG=nerdTail:* npx nodemon cli/nerdTailListener.js",
+    "test-util:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* ./cli/nerdTailClient.js",
+    "test-util:publisher:json": "node testUtils/chattyServer.js --contentType=json 2>&1 | DEBUG=nerdTail:* node ./cli/nerdTailClient.js --contentType=json"
   },
   "nodemonConfig": {
     "watch": [
@@ -23,10 +30,9 @@
     ]
   },
   "dependencies": {
-    "@solid-primitives/websocket": "^1.2.0",
-    "concurrently": "^8.2.2",
-    "debug": "^4.3.4",
-    "dexie": "^3.2.5",
+    "@solid-primitives/websocket": "^1.2.2",
+    "debug": "^4.3.7",
+    "dexie": "^3.2.7",
     "highlight.js": "^11.9.0",
     "json5": "2.2.3",
     "koa": "^2.14.2",
@@ -39,11 +45,11 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "np": "^10.0.1",
-    "@types/node": "^20.10.4",
-    "sass": "^1.69.5",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.7",
-    "vite-plugin-solid": "^2.8.0"
+    "@types/node": "^22.8.2",
+    "np": "^10.0.7",
+    "sass": "^1.80.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vite-plugin-solid": "^2.10.2"
   }
 }

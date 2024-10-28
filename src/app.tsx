@@ -25,7 +25,7 @@ export function App() {
     <Suspense>
       <main>
         <For each={logs} fallback={<EmptyMessage />}>
-          {(msg) => <LogLine showStreamId={true} msg={msg} />}
+          {(msg) => <LogLine msg={msg} />}
         </For>
       </main>
       <NavBar streams={streams} />

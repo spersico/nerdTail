@@ -12,13 +12,13 @@ const debug = debugLog('nerdTail');
 const debugSocket = debugLog('nerdTail:socket');
 const options = await yargs(process.argv.slice(2))
   .scriptName("nerdTail")
-  .usage('Usage: cmd | nerdTail Publisher Service [OPTIONS]')
-  .example('server | nerdTail > server.log', 'localhost + file')
+  .usage('Usage: cmd | nerdTail [OPTIONS]')
+  .example('server | nerdTail', 'NerdTail will pipe stdin to stdout and send it to localhost:9999')
   .example('server | nerdTail --id api.domain.com', 'Name the log stream')
-  .example('server | nerdTail --host example.com', 'Sends to example.com')
-  .example('server | nerdTail --port 43567', 'Uses custom port')
   .example('server | nerdTail --mute', 'No stdout')
-  .example('server | nerdTail --no-tty', 'Strips ansi colors')
+  .example('server | nerdTail > server.log', 'localhost + file - You can redirect the output to a file (as long as you don\'t use --mute)')
+  .example('server | nerdTail --port 43567', 'Uses custom port')
+  .example('server | nerdTail --host example.com', 'Sends to example.com')
   .option('host', {
     alias: 'h',
     type: 'string',
@@ -37,21 +37,23 @@ const options = await yargs(process.argv.slice(2))
     default: () => namor.generate(),
     describe: 'The log stream id - Will generate a random ID if not chosen'
   })
-  .option('json', {
-    alias: 's',
-    type: 'boolean',
-    describe: 'Attempt to parse JSON lines - Use when output is JSON or JSON5',
-    default: false,
+  .option('contentType', {
+    alias: 'ct',
+    choices: ['plaintext', 'json'],
+    describe: 'Used to give hints to the server on how to parse the log line',
+    default: 'plaintext',
   })
   .option('timestamp', {
+    alias: 't',
     type: 'boolean',
+    describe: 'Adds a timestamp to each log line',
     default: false,
-    describe: 'Adds a timestamp to each log line'
   })
   .option('mute', {
     alias: 'm',
     type: 'boolean',
-    describe: 'Don\'t pipe stdin with stdout'
+    describe: 'Don\'t pipe stdin with stdout',
+    default: false,
   })
   .help('help')
   .strict()
@@ -103,52 +105,49 @@ function onConnect() {
 }
 
 function onError(err) {
-  // @ts-ignore
   if (err?.code === 'EADDRINUSE') return;
   debugSocket(`ERROR: ${err.stack}`);
 }
 
+
 function logParse(line, type = 'log') {
-  const message = { id: options.id, contentType: 'plaintext', content: line, type };
+  let message = { id: options.id, content: line, contentType: options.contentType, type };
   if (options.timestamp) {
     message.timestamp = new Date().toISOString();
   }
-  if (options.json) {
-    try {
-      message.structured = json5.parse(line);
-      message.contentType = 'json';
-    } catch (err) {
-      debug('Error parsing line', line);
-    }
-  }
+
+  // MAYBE?: use another stringifier here. Can this fail?
   return JSON.stringify(message);
 }
 
-function sendMessage(data, type) {
+async function sendMessage(data, type) {
   if (!isReady) return debugSocket(`ERROR SENDING: Socket not ready`);
-  const message = logParse(data, type);
-  const payload = Buffer.from(message);
+  const payload = Buffer.from(logParse(data, type));
 
   isSending++;
   logsSocket.send(payload, 0, payload.length, options.port, options.host, function (err) {
     if (err) { debugSocket(`ERROR SENDING: ${err.stack}`); }
-    else { debugSocket(`Broadcasted ${message} `); }
+    else { debugSocket(`Broadcasted ${payload.toString()} `); }
     isSending--;
     if (isClosed && !isSending) logsSocket.close();
   });
 }
 
 function closeConnection(event) {
+  if (isClosed) return;
   debug('stdin closed with event:${event}');
   sendMessage({ event }, 'close');
   isClosed = true;
-  logsSocket.close();
 }
 
-
+// Listen for the SIGINT signal (Ctrl+C)
+process.on('SIGINT', () => {
+  closeConnection('SIGINT');
+});
 
 startSocketServer();
 process.stdin.pipe(split(null, null, { trailing: false })).on('data', sendMessage);
 process.stdin.on('end', () => closeConnection('end'));
+process.stdin.on('exit', () => closeConnection('exit'));
 process.stdin.on('unpipe', () => closeConnection('unpipe'));
 process.stdin.on('finish', () => closeConnection('finish'));

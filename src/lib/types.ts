@@ -5,10 +5,9 @@ type RawMessage = Record<string, unknown> & {
 export type RawLogMessage = {
   host: string;
   port: number;
-  contentType: string;
+  contentType: 'json' | 'plaintext';
   streamid: string;
   timestamp: Date;
-  structured: boolean;
   content: string;
   type?: string;
 };

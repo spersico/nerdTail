@@ -1,13 +1,7 @@
 import styles from './LogLine.module.scss';
 import { LogMessage } from '../lib/types';
 
-export default function LogLine({
-  msg,
-  showStreamId = false,
-}: {
-  msg: LogMessage;
-  showStreamId?: boolean;
-}) {
+export default function LogLine({ msg }: { msg: LogMessage }) {
   return (
     <div
       class={`${styles.line} ${!msg.timestamp && styles.lineWithoutTimestamp}`}

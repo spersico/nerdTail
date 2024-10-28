@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
-import { parseLog } from './log-parser';
+import { parseLogMessage } from './log-parser';
 import { LogMessage, RawLogMessage } from './types';
-import Dexie, { Table } from 'dexie';
+import Dexie, { Collection, Table } from 'dexie';
 
 export class Store extends Dexie {
   streams!: Table<{ id: string }, string>;
@@ -16,8 +16,8 @@ export class Store extends Dexie {
   }
 
   async addLog(rawLog: RawLogMessage) {
-    const { id, streamId, timestamp, raw } = parseLog(rawLog);
-    await this.logs.add({ id, streamId, timestamp, raw });
+    const { id, streamId, timestamp, raw, formatted } = parseLogMessage(rawLog);
+    await this.logs.add({ id, streamId, timestamp, raw, formatted });
   }
 
   async clearLogs() {
@@ -25,11 +25,15 @@ export class Store extends Dexie {
   }
 
   async setStreams(backendStreams: string[]) {
-    const streams = backendStreams
-      .filter((stream) => stream !== '_common_room')
-      .map((stream) => ({ id: stream }));
-    await this.streams.clear();
-    await this.streams.bulkAdd(streams);
+    try {
+      const currentStreams = await this.streams.toArray();
+      const streamsToAdd = backendStreams
+        .filter((stream) => !currentStreams.some((s) => s.id === stream))
+        .map((stream) => ({ id: stream }));
+      await this.streams.bulkAdd(streamsToAdd);
+    } catch (error) {
+      console.error(`setStreams:`, error, backendStreams);
+    }
   }
 }
 
@@ -40,28 +44,26 @@ export const [filters, setFilters] = createSignal<{
   search?: string;
 }>({});
 
-export function logFilteringLogic() {
+export async function logFilteringLogic(): Promise<LogMessage[]> {
   const { streamId, search } = filters();
 
-  if (typeof streamId !== 'string' && typeof search !== 'string')
-    return db.logs.toArray();
+  let collection = db.logs.toCollection();
 
-  if (streamId)
-    return db.logs
-      .where('streamId')
-      .equals(streamId)
-      .filter((log) => {
-        return typeof search === 'string' && search
-          ? log.raw.includes(search)
-          : true;
-      })
-      .toArray();
+  if (streamId) {
+    collection = db.logs.where('streamId').equals(streamId);
+  }
 
-  return db.logs
-    .filter((log) => {
+  if (typeof search === 'string' && !!search.trim()) {
+    collection = collection.filter((log) => {
       return typeof search === 'string' && search
         ? log.raw.includes(search)
         : true;
-    })
-    .toArray();
+    });
+  }
+
+  return collection.toArray();
+}
+
+export function clearLogs() {
+  db.clearLogs();
 }

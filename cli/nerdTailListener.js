@@ -29,11 +29,11 @@ const options = await yargs(process.argv.slice(2))
     default: 9999,
     describe: 'The listening UDP port'
   })
-  .option('persist', {
+  .option('persist', { // TODO: Keep working on persistence. 
     default: false,
     describe: `Persist messages to disk - Defaults to false - If set, will persist logs on ${logFolder.pathname} folder`
   })
-  .option('persistFlush', {
+  .option('persistFlush', {  // TODO: Keep working on persistence. 
     default: 0,
     describe: 'The amount (in seconds) to wait before flushing the logs file - By default we do not flush the logs'
   })
@@ -115,7 +115,8 @@ function messageSocket(event) {
 * id: string, 
 * timestamp: string, 
 * content: string, 
-* contentType: string} } SocketMessage
+* contentType?: 'json' | 'plaintext',
+* } } SocketMessage
  */
 
 /**
@@ -124,7 +125,7 @@ function messageSocket(event) {
  * timestamp?: string,
  * streamid?: string,
  * content?: string,
- * contentType?: string,
+ * contentType?: 'json' | 'plaintext',
  * streams?: string[] } } WebSocketMessage
  */
 
@@ -222,6 +223,7 @@ logsSocket.on('close', (err) => {
 logsSocket.on('message', function (rawData, origin) {
   debugSocket(`Received message from ${origin.address}:${origin.port}`, rawData.toString());
   const data = decodeSocketMessage(rawData);
+
   if (!data || (data.type === 'listening' && data.role === 'subscriber')) return;
   if (!streams[data.id]) {
     debugSocket(`New stream id: ${data.id}`);
@@ -241,7 +243,13 @@ logsSocket.on('message', function (rawData, origin) {
     type: 'log',
   };
   streams[data.id].last = Date.now();
-  broadcastToFrontend(message);
+
+  if (data.type === 'close') {
+    delete streams[data.id];
+    broadcastToFrontend(prepareStreamsMessage());
+  } else {
+    broadcastToFrontend(message);
+  }
 });
 
 /** @type {import('ws').WebSocketServer} */

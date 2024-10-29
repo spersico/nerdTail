@@ -12,13 +12,19 @@ import serve from "koa-static";
 import { URL } from 'url';
 import { appendFile, mkdir, } from 'fs/promises';
 import { existsSync, writeFileSync } from 'node:fs';
+import open from 'open';
 
 const logFolder = new URL('./logs/', import.meta.url);
-const debugSocket = debugLog('nerdTail:socket');
-const debugWebSocket = debugLog('nerdTail:websocket');
+const debugSocket = debugLog('logLens:socket');
+const debugWebSocket = debugLog('logLens:websocket');
 const options = await yargs(process.argv.slice(2))
-  .scriptName("nerdTailServer")
-  .usage('Usage: nerdTailServer [OPTIONS]')
+  .scriptName("logLensServer")
+  .usage('Usage: logLensServer [OPTIONS]')
+  .option('open', {
+    alias: 'o',
+    default: 'true',
+    describe: 'Should the browser open automatically?'
+  })
   .option('host', {
     alias: 'uh',
     default: 'localhost',
@@ -51,15 +57,18 @@ const options = await yargs(process.argv.slice(2))
  */
 const logsSocket = dgram.createSocket({ type: 'udp4' });
 const koaInstance = new Koa();
+const bffServerUrl = new URL(`http://${options.host}:${options.port}`);
 const bffServer = koaInstance.listen(options.port, options.host,
-  () => console.log(`🚀  Listening Server live on ${new URL(`http://${options.host}:${options.port}`).href}`)
+  () => console.log(`🚀  Subscriber live on ${bffServerUrl.href}`)
 );
 /** @type {import('ws').WebSocketServer} */
 const frontendWebsocketServer = new WebSocketServer({ server: bffServer });
 
 /** Serve the built frontend. */
-const __frontendDirname = new URL('./nerdTailSub-frontend', import.meta.url).pathname;
+const __frontendDirname = new URL('./logLensSub-frontend', import.meta.url).pathname;
 koaInstance.use(serve(decodeURIComponent(__frontendDirname), { index: 'index.html' }));
+
+if (options.open === 'true') open(bffServerUrl.href);
 
 /** @ts-ignore @type {{ [key: string]: {last: number, subscribers: any[]} } & { _common_room: {subscribers: any[]} }}  */
 const streams = { _common_room: { subscribers: [] } };
@@ -210,7 +219,7 @@ logsSocket.on('error', (err) => {
   if (err?.code === 'EADDRINUSE') {
     console.error('\x1b[41m%s\x1b[0m', 'CRITICAL ERROR: The socket port is already in use');
     console.error('\x1b[31m%s\x1b[0m', `\nThis means that some other process is already listening on port ${options.port} on ${options.host}.\n
-    Please check if you have another instance of nerdTail running, or if you have another process listening on that port.
+    Please check if you have another instance of logLens running, or if you have another process listening on that port.
     OR set another port in both publishers and subscribers, using the --port option.`);
     process.exit(1);
   }

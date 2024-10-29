@@ -1,30 +1,29 @@
 {
-  "name": "nerdtail",
-  "description": "nerdTail is a command line utility that grabs every line in stdin from a process, and broadcasts it over UDP.  Tail log files, app output, or whatever you wish. See multiple streams in the browser, in realtime.",
+  "name": "loglens",
+  "description": "A tool for viewing and filtering logs in a web browser UI",
   "author": "spersico",
   "license": "MIT",
   "version": "0.0.9",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/spersico/nerdTail.git"
+    "url": "git+https://github.com/spersico/logLens.git"
   },
   "bugs": {
-    "url": "https://github.com/spersico/nerdTail/issues"
+    "url": "https://github.com/spersico/logLens/issues"
   },
   "bin": {
-    "nerdTailClient": "cli/nerdTailClient.js",
-    "nerdTailListener": "cli/nerdTailListener.js"
+    "logLensPub": "cli/publisher.js",
+    "logLensSub": "cli/subscriber.js"
   },
   "scripts": {
-    "build": "tsc && vite build --outDir=cli/nerdTailSub-frontend",
-    "build:watch": "tsc && vite build --outDir=cli/nerdTailSub-frontend --watch=true",
     "dev:client": "vite --port 9998",
-    "dev:server": "DEBUG=nerdTail:* npx nodemon cli/nerdTailListener.js",
-    "test-util:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=nerdTail:* ./cli/nerdTailClient.js",
-    "test-util:publisher:json": "node testUtils/chattyServer.js --contentType=json 2>&1 | DEBUG=nerdTail:* node ./cli/nerdTailClient.js --contentType=json"
+    "dev:server": "DEBUG=logLens:* npx nodemon cli/subscriber.js --open=false",
+    "test-util:publisher": "node testUtils/chattyServer.js 2>&1 | DEBUG=logLens:* ./cli/publisher.js",
+    "test-util:publisher:json": "node testUtils/chattyServer.js --contentType=json 2>&1 | DEBUG=logLens:* node ./cli/publisher.js --contentType=json",
+    "build": "tsc && vite build --outDir=cli/logLensSub-frontend"
   },
-  "main": "cli/nerdTailListener.js",
+  "main": "cli/subscriber.js",
   "nodemonConfig": {
     "watch": [
       "./cli/**"
@@ -42,6 +41,7 @@
     "koa": "^2.14.2",
     "koa-static": "^5.0.0",
     "namor": "^3.0.1",
+    "open": "^10.1.0",
     "solid-dexie": "^0.0.5",
     "solid-js": "^1.8.5",
     "split": "^1.0.1",

@@ -8,17 +8,18 @@ import debugLog from 'debug';
 import split from "split";
 import dgram from "dgram";
 
-const debug = debugLog('nerdTail');
-const debugSocket = debugLog('nerdTail:socket');
+const debug = debugLog('logLens');
+const debugSocket = debugLog('logLens:socket');
 const options = await yargs(process.argv.slice(2))
-  .scriptName("nerdTail")
-  .usage('Usage: cmd | nerdTail [OPTIONS]')
-  .example('server | nerdTail', 'NerdTail will pipe stdin to stdout and send it to localhost:9999')
-  .example('server | nerdTail --id api.domain.com', 'Name the log stream')
-  .example('server | nerdTail --mute', 'No stdout')
-  .example('server | nerdTail > server.log', 'localhost + file - You can redirect the output to a file (as long as you don\'t use --mute)')
-  .example('server | nerdTail --port 43567', 'Uses custom port')
-  .example('server | nerdTail --host example.com', 'Sends to example.com')
+  .scriptName("logLensPub")
+  .usage('Usage: cmd | logLensPub [OPTIONS]')
+  .example('server | logLensPub', 'This will pipe the output of the server and send it to the subscriber')
+  .example('cat logs.txt | logLensPub', 'This will pipe the output of the command and send it to the subscriber')
+  .example('server | logLensPub --id api.domain.com', 'Name the log stream')
+  .example('server | logLensPub --mute', 'No stdout')
+  .example('server | logLensPub > server.log', 'localhost + file - You can redirect the output to a file (as long as you don\'t use --mute)')
+  .example('server | logLensPub --port 43567', 'Uses custom port')
+  .example('server | logLensPub --host example.com', 'Sends to example.com')
   .option('host', {
     alias: 'h',
     type: 'string',

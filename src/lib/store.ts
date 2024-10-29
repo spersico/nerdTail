@@ -8,7 +8,7 @@ export class Store extends Dexie {
   logs!: Table<LogMessage, string>;
 
   constructor() {
-    super('nerdTail');
+    super('logLens');
     this.version(1).stores({
       streams: 'id',
       logs: 'id, streamId, timestamp, raw',

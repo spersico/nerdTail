@@ -2,8 +2,8 @@
 logs
 *.log
 npm-debug.log*
-cli/nerdtailSub-frontend/*
-cli/nerdtailSub-frontend/index.html
+cli/logLensSub-frontend/*
+cli/logLensSub-frontend/index.html
 node_modules
 dist/*
 dist-ssr

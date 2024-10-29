@@ -3,7 +3,7 @@
   "description": "A tool for viewing and filtering logs in a web browser UI",
   "author": "spersico",
   "license": "MIT",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "type": "module",
   "repository": {
     "type": "git",

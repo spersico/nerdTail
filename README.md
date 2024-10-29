@@ -28,7 +28,7 @@ echo "Hello, World!" | logLensPub
 
 ## How does it work?
 
-[Diagram](https://imgur.com/rWMpZpx)
+![Diagram showing Log Lens simplified architecture](https://i.imgur.com/rWMpZpx.png)
 
 The way it works is that you pipe the output of a process to `logLensPub`, then you open `logLensSub` (in another terminal tab/pane) and then you open the browser to `http://localhost:9999` (or whatever port you specify).
 

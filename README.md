@@ -23,8 +23,8 @@ And now you can run the following command in another terminal tab/pane to see th
 
 ```bash
 echo "Hello, World!" | logLensPub
-# replace `echo "Hello, World!"` with any command that outputs logs, like your server (`npm run dev`), or a test suite (`npm test`), etc.
 ```
+Replace `echo "Hello, World!"` with any command that has an output in `stdout` and/or `stderr`, like your server (`npm run dev`), or a test suite (`npm test`), etc.
 
 ## How does it work?
 

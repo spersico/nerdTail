@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // @ts-check
 
-import json5 from 'json5';
 import yargs from 'yargs';
 import namor from 'namor';
 import debugLog from 'debug';
